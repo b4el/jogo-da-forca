@@ -1,0 +1,31 @@
+# Pastas de build (geradas pelo CMake / Visual Studio)
+build/
+out/
+cmake-build-*/
+
+# Arquivos do Visual Studio
+.vs/
+*.user
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+CMakeSettings.json
+CMakeUserPresets.json
+
+# Binarios e objetos
+*.exe
+*.obj
+*.o
+*.pdb
+*.ilk
+*.lib
+*.a
+
+# VS Code
+.vscode/
+
+# Sistema
+Thumbs.db
+.DS_Store
