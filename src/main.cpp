@@ -4,6 +4,12 @@
 #include <iostream>
 #include <string>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>  // so para colocar o console do Windows em UTF-8
+#endif
+
 #include "BancoDePalavras.h"
 #include "Forca.h"
 
@@ -36,16 +42,13 @@ void jogarPartida(const std::string& palavra) {
 
         std::string entrada;
         if (!std::getline(std::cin, entrada)) return;  // fim da entrada (Ctrl+Z / Ctrl+D)
-        if (entrada.size() != 1) {
-            std::cout << ">> Digite apenas UMA letra.\n";
-            continue;
-        }
 
-        switch (jogo.chutar(entrada[0])) {
-            case Resultado::Acerto:   std::cout << ">> Boa! Tem essa letra.\n"; break;
-            case Resultado::Erro:     std::cout << ">> Nao tem essa letra.\n"; break;
+        // A classe Forca entende UTF-8: "a", "A", "ã" e "Ã" contam como o mesmo chute
+        switch (jogo.chutar(entrada)) {
+            case Resultado::Acerto: std::cout << ">> Boa! Tem essa letra.\n"; break;
+            case Resultado::Erro: std::cout << ">> Nao tem essa letra.\n"; break;
             case Resultado::Repetida: std::cout << ">> Voce ja chutou essa letra.\n"; break;
-            case Resultado::Invalida: std::cout << ">> Isso nao e uma letra.\n"; break;
+            case Resultado::Invalida: std::cout << ">> Digite UMA letra (sem acento tambem vale).\n"; break;
         }
     }
 
@@ -59,10 +62,16 @@ void jogarPartida(const std::string& palavra) {
 }  // namespace
 
 int main() {
+#ifdef _WIN32
+    // O console do Windows nao usa UTF-8 por padrao: sem isso, "Ã" apareceria como "Ãƒ"
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
+
     BancoDePalavras banco("palavras.txt");
     std::cout << "=== JOGO DA FORCA ===\n";
-    if (!banco.carregouDoArquivo())
-        std::cout << "(palavras.txt nao encontrado, usando lista padrao)\n";
+    std::cout << "Dica: chute as letras sem acento. O A revela Á, Â e Ã; o C revela Ç.\n";
+    if (!banco.carregouDoArquivo()) std::cout << "(palavras.txt nao encontrado, usando lista padrao)\n";
 
     std::string resposta = "s";
     while (resposta == "s" || resposta == "S") {
