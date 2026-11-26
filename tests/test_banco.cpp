@@ -22,12 +22,14 @@ std::string arquivoTemporario(const std::string& conteudo) {
 
 TEST(BancoDePalavras, LeAcentosBomEFinaisDeLinhaDoWindows) {
     // BOM no comeco, linhas terminadas em \r\n, palavras com acento, linhas invalidas no meio
-    std::string nome = arquivoTemporario(
-        u8"\xEF\xBB\xBF"
-        u8"CORAÇÃO\r\n"
-        u8"\r\n"
-        u8"abc123\r\n"
-        u8"  maçã  \r\n");
+    // O BOM vem num texto comum ("..."), nao em u8"...": em u8"...", o Visual Studio
+    // converteria cada \x em um caractere acentuado, em vez de gravar o byte exato.
+    const std::string bom = "\xEF\xBB\xBF";
+    std::string nome = arquivoTemporario(bom +
+                                         u8"CORAÇÃO\r\n"
+                                         u8"\r\n"
+                                         u8"abc123\r\n"
+                                         u8"  maçã  \r\n");
     BancoDePalavras banco(nome);
     std::remove(nome.c_str());
 
